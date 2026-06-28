@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+  }
+}
+
+@layer components {
+  /* Input fields */
+  .input-field {
+    @apply w-full bg-[#13131A] border border-[#2A2A3A] rounded-lg px-4 py-3 text-white 
+           placeholder-gray-500 focus:outline-none focus:border-violet-500 
+           transition-colors duration-200 text-sm;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-violet-600 hover:bg-violet-500 text-white font-semibold px-6 py-3 
+           rounded-lg transition-all duration-200 disabled:opacity-50 
+           disabled:cursor-not-allowed text-sm;
+  }
+
+  /* Score badge colors */
+  .badge-hot {
+    @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30;
+  }
+
+  .badge-warm {
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+  }
+
+  .badge-cold {
+    @apply bg-red-500/20 text-red-400 border border-red-500/30;
+  }
+
+  /* Card style */
+  .card {
+    @apply bg-[#13131A] border border-[#2A2A3A] rounded-xl p-6;
+  }
+}
