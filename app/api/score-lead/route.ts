@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase";
+import { buildWhatsAppMessage } from "@/lib/ai-message";
+import { sendToSalesTeam } from "@/lib/whatsapp";
 
 // Initialize OpenAI client
 // OPENAI_API_KEY is read automatically from environment
@@ -80,7 +82,7 @@ Return ONLY a JSON object with exactly these fields, no extra text, no markdown:
     }
 
     // 8. Save the complete lead + score to Supabase
-    const { data, error: dbError } = await supabase
+    const { data, error: dbError } = await supabaseAdmin
       .from("leads_p1")
       .insert([
         {
@@ -104,7 +106,23 @@ Return ONLY a JSON object with exactly these fields, no extra text, no markdown:
       throw new Error("Failed to save lead to database.");
     }
 
-    // 9. Return the saved lead (includes the auto-generated id and created_at)
+    // 9. Auto-notify sales team via WhatsApp for hot leads (score >= 7)
+    if (scoring.score >= 7) {
+      try {
+        const waMessage = await buildWhatsAppMessage(data);
+        const { successCount } = await sendToSalesTeam(waMessage);
+        if (successCount > 0) {
+          await supabaseAdmin
+            .from("leads_p1")
+            .update({ notified_at: new Date().toISOString() })
+            .eq("id", data.id);
+        }
+      } catch (waError) {
+        console.error("WhatsApp notify error:", waError);
+      }
+    }
+
+    // 10. Return the saved lead (includes the auto-generated id and created_at)
     return NextResponse.json({ lead: data }, { status: 201 });
   } catch (error) {
     console.error("Score lead error:", error);

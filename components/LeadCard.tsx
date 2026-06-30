@@ -1,4 +1,5 @@
 import type { Lead } from "@/lib/supabase";
+import NotifyButton from "@/app/dashboard/NotifyButton";
 
 type Props = {
   lead: Lead;
@@ -115,6 +116,15 @@ export default function LeadCard({ lead }: Props) {
         <span className="text-xs text-gray-600 font-mono flex-shrink-0 ml-2">
           {formatDate(lead.created_at)}
         </span>
+      </div>
+
+      {/* WhatsApp notify button */}
+      <div className="mt-3">
+        <NotifyButton
+          leadId={lead.id}
+          score={lead.score}
+          notifiedAt={lead.notified_at}
+        />
       </div>
     </div>
   );

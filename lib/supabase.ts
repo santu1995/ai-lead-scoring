@@ -6,6 +6,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+
 // TypeScript type matching our leads table
 export type Lead = {
   id: string;
@@ -20,4 +25,5 @@ export type Lead = {
   reason: string;
   action: string;
   created_at: string;
+  notified_at: string | null;
 };
