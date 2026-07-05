@@ -24,6 +24,7 @@ export type Lead = {
   score: number;
   reason: string;
   action: string;
+  source: string;
   created_at: string;
   notified_at: string | null;
 };

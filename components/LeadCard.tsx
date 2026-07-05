@@ -36,6 +36,13 @@ function getScoreStyles(score: number): {
   };
 }
 
+function getSourceStyles(source: string): string {
+  if (source === "Website") return "bg-blue-500/10 text-blue-300";
+  if (source === "Facebook Ad") return "bg-indigo-500/10 text-indigo-300";
+  if (source === "Google Form") return "bg-emerald-500/10 text-emerald-300";
+  return "bg-gray-500/10 text-gray-300";
+}
+
 // Formats a date string to "Jun 26, 2026 · 2:30 PM"
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleString("en-US", {
@@ -65,6 +72,9 @@ export default function LeadCard({ lead }: Props) {
           <p className="text-gray-400 text-sm truncate">
             {lead.role} · {lead.company}
           </p>
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md inline-block mt-1 ${getSourceStyles(lead.source)}`}>
+            {lead.source}
+          </span>
         </div>
         <div
           className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold flex-shrink-0 ${styles.badge}`}
