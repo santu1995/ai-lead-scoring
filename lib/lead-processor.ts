@@ -3,6 +3,7 @@ import { supabaseAdmin } from "./supabase";
 import { buildWhatsAppMessage } from "./ai-message";
 import { sendToSalesTeam } from "./whatsapp";
 import { NormalizedLead } from "./normalize-lead";
+import { enrichLead } from "./enrich-lead";
 
 const openai = new OpenAI();
 
@@ -12,7 +13,6 @@ export async function processLead(
 ) {
   const { name, email, company, role, budget, timeline, message } = lead;
 
-  // Same required-field check your original route.ts enforced
   if (
     !name ||
     !email ||
@@ -25,6 +25,19 @@ export async function processLead(
     throw new Error("All fields are required.");
   }
 
+  const enrichment = await enrichLead(email);
+
+  const enrichmentBlock = enrichment
+    ? `
+ENRICHED COMPANY DATA (from Apollo.io):
+- Verified company: ${enrichment.company || "Unknown"}
+- Industry: ${enrichment.industry || "Unknown"}
+- Employee count: ${enrichment.employeeCount || "Unknown"}
+- Location: ${enrichment.location || "Unknown"}
+
+Use this verified data to sharpen your scoring — a verified mid-size or larger company in a relevant industry should score higher than an unverifiable one-person claim.`
+    : "";
+
   const prompt = `You are a B2B sales qualification expert. Score this inbound lead for a US software agency.
 
 LEAD DETAILS:
@@ -35,13 +48,14 @@ LEAD DETAILS:
 - Budget mentioned: ${budget}
 - Timeline: ${timeline}
 - Message: ${message}
+${enrichmentBlock}
 
 SCORING CRITERIA:
 - Budget fit (bigger budget = higher score)
 - Timeline urgency (sooner = higher score)
 - Role seniority (decision-maker = higher score)
 - Message clarity and intent (specific request = higher score)
-- Company size signals in the message
+- Company size signals in the message${enrichment ? " and verified enrichment data" : ""}
 
 Return ONLY a JSON object with exactly these fields, no extra text, no markdown:
 {
@@ -86,6 +100,11 @@ Return ONLY a JSON object with exactly these fields, no extra text, no markdown:
         reason: scoring.reason,
         action: scoring.action,
         source,
+        hunter_company: enrichment?.company || null,
+        hunter_industry: enrichment?.industry || null,
+        hunter_employee_count: enrichment?.employeeCount || null,
+        hunter_location: enrichment?.location || null,
+        enriched: !!enrichment,
       },
     ])
     .select()

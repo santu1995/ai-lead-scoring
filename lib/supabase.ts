@@ -25,6 +25,11 @@ export type Lead = {
   reason: string;
   action: string;
   source: string;
+  hunter_company: string | null;
+  hunter_industry: string | null;
+  hunter_employee_count: string | null;
+  hunter_location: string | null;
+  enriched: boolean;
   created_at: string;
   notified_at: string | null;
 };

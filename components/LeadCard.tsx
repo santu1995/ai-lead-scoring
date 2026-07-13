@@ -100,7 +100,36 @@ export default function LeadCard({ lead }: Props) {
           ⏱ {lead.timeline}
         </span>
       </div>
-
+{/* Enrichment data (only shows if Apollo found something) */}
+{lead.enriched && (
+  <div className="mb-4 bg-[#1E1E2A] rounded-lg p-3 border border-[#2A2A3A]">
+    <p className="text-xs text-violet-400 font-mono mb-2">
+      ✨ ENRICHED COMPANY DATA
+    </p>
+    <div className="flex flex-wrap gap-2">
+      {lead.hunter_company && (
+        <span className="bg-violet-500/10 text-violet-300 text-xs px-2.5 py-1 rounded-md font-mono">
+          🏢 {lead.hunter_company}
+        </span>
+      )}
+      {lead.hunter_industry && (
+        <span className="bg-violet-500/10 text-violet-300 text-xs px-2.5 py-1 rounded-md font-mono">
+          🏭 {lead.hunter_industry}
+        </span>
+      )}
+      {lead.hunter_employee_count && (
+        <span className="bg-violet-500/10 text-violet-300 text-xs px-2.5 py-1 rounded-md font-mono">
+          👥 {lead.hunter_employee_count} employees
+        </span>
+      )}
+      {lead.hunter_location && (
+        <span className="bg-violet-500/10 text-violet-300 text-xs px-2.5 py-1 rounded-md font-mono">
+          📍 {lead.hunter_location}
+        </span>
+      )}
+    </div>
+  </div>
+)}
       {/* AI Reason */}
       <div className="mb-3">
         <p className="text-xs text-gray-500 font-mono mb-1">AI REASONING</p>
